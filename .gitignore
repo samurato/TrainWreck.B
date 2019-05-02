@@ -87,3 +87,4 @@ typings/
 # Other
 .idea/
 yarn.lock
+.package-lock.json
