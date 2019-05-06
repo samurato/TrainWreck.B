@@ -11,18 +11,20 @@ export enum UserRole {
 }
 
 export interface IUser {
-  id: string;
+  id: number;
   email: string;
   role: UserRole;
   salt: string;
   password: string;
   disabled: boolean;
+  createdDate: Date;
+  updatedDate: Date;
 }
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  public id: string;
+  public id: number;
 
   @IsNotEmpty()
   @Column()

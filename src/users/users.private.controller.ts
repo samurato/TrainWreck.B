@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Get, Param } from '@nestjs/common';
 import { UserRole } from './user.entity';
 import { UsersService } from './users.service';
 import { UsersRegisterDto } from './users.dto';
@@ -15,5 +15,12 @@ export class UsersPrivateController {
   ) {
     const {email, password, role} = user;
     return await this.usersService.create({email, password, role});
+  }
+
+  @Get('/:userId')
+  public async getUser(
+    @Param('userId') userId: string,
+  ) {
+    return await this.usersService.get(userId);
   }
 }
