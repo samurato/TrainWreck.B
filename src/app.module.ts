@@ -1,14 +1,21 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
-import { UsersService } from './users/users.service';
-import { UsersController } from './users/users.controller';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { JWTAuthMiddleware } from './auth/middlewares/jwt.auth.middleware';
+import { AuthPrivateController } from './auth/auth.private.controller';
+import { LoggerMiddleware } from './utils/middlewares/logger.middleware';
 
 @Module({
-  imports: [],
-  controllers: [AppController, AuthController, UsersController],
-  providers: [AppService, AuthService, UsersService],
+  imports: [AuthModule, UsersModule],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JWTAuthMiddleware)
+      .forRoutes(AuthPrivateController);
+    consumer
+      .apply(LoggerMiddleware)
+      .with('ApplicationModule')
+      .forRoutes('*');
+  }
+}
