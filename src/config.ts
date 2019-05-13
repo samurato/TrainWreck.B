@@ -3,7 +3,7 @@ const hostConfig = {
 };
 
 const databaseConfig = {
-  DATABASE_URL: process.env.DATABASE_URL || 'postgres://gli-dev:thecakeisalie@localhost:5432/trainwreck',
+  DATABASE_URL: process.env.DATABASE_URL || 'postgres://gli-dev:thecakeisalie@localhost:5432/trainwreck_13_05_19',
 }
 
 const authConfig = {

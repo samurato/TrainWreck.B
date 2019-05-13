@@ -11,20 +11,11 @@ export class AuthController {
   public async login(
     @Body() body: AuthLoginDto,
   ) {
-    const user = await this.authService.validateCredentials(body);
+    const user = await this.authService.validateCredentials({Email: body.email, Password: body.password});
     if (!user) {
       throw new UnauthorizedException();
     }
-    const token = await this.authService.createToken(user.id);
+    const token = await this.authService.createToken(user.User_ID);
     return {...token, user};
   }
-
-  // public async login(@Body() body: AuthLoginDto) {
-  //   const user = await this.authService.validateCredentials(body as IUser);
-  //   if (!user) {
-  //     throw new UnauthorizedException();
-  //   }
-  //   const token = await this.authService.createToken(user);
-  //   return {...token, user};
-  // }
 }

@@ -22,12 +22,12 @@ export class AuthService {
   constructor(private readonly usersService: UsersService) {}
 
   public async validateCredentials(user: Partial<IUser>) {
-    if (!user.email || !user.password) {
+    if (!user.Email || !user.Password) {
       return null;
     }
-    const foundUser = await this.usersService.getByEmail(user.email.toLowerCase().trim());
+    const foundUser = await this.usersService.getByEmail(user.Email.toLowerCase().trim());
     if (foundUser) {
-      return await foundUser.authenticate(user.password);
+      return await foundUser.authenticate(user.Password);
     }
     return null;
   }
@@ -37,10 +37,10 @@ export class AuthService {
     const user: User = await this.usersService.get(userId);
     if (user) {
       const userData: JWTPayload = {
-        id: String(user.id),
-        email: user.email,
-        role: user.role,
-        updatedDate: user.updatedDate.getTime(),
+        id: String(user.User_ID),
+        email: user.Email,
+        role: user.Role,
+        updatedDate: user.UpdatedDate.getTime(),
       };
       const token = await jwt.sign(userData, JWT_SECRET, {expiresIn: JWT_EXPIRY});
       return {token, expires_in: JWT_EXPIRY};
@@ -48,4 +48,22 @@ export class AuthService {
       throw new BadRequestException();
     }
   }
+
+  /**
+   * Used for jwt authentication. Checks that the jwt token is valid
+   */
+  public async validateUser(token): Promise<IUser> {
+    if (!token.Email) {
+      return null;
+    }
+    const user = await this.usersService.get(token.id);
+    if (user) {
+      if (user.UpdatedDate.getTime() !== token.UpdatedDate || user.Role !== token.Role) {
+        return null;
+      }
+      return user;
+    }
+    return null;
+  }
+
 }

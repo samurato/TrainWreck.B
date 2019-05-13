@@ -8,45 +8,60 @@ export enum UserRole {
   ADMIN = 'admin',
   SIGNAL_OPERATOR = 'signal_operator',
   TRAIN_DRIVER = 'train-driver',
+  GUEST = 'guest',
+}
+
+export function GetUserRole(role: string): UserRole {
+  switch (role) {
+    case 'admin':
+      return UserRole.ADMIN;
+    case 'signal_operator':
+      return UserRole.SIGNAL_OPERATOR;
+    case 'train-driver':
+      return UserRole.TRAIN_DRIVER;
+    case 'guest':
+    default:
+      return UserRole.GUEST;
+  }
 }
 
 export interface IUser {
-  id: number;
-  email: string;
-  role: UserRole;
-  salt: string;
-  password: string;
-  disabled: boolean;
-  createdDate: Date;
-  updatedDate: Date;
+  User_ID: number;
+  Email: string;
+  Role: UserRole;
+  Salt: string;
+  Password: string;
+  IsActive: boolean;
+  CreatedDate: Date;
+  UpdatedDate: Date;
 }
 
-@Entity()
+@Entity('User')
 export class User {
   @PrimaryGeneratedColumn()
-  public id: number;
+  public User_ID: number;
 
   @IsNotEmpty()
   @Column()
-  public email: string;
+  public Email: string;
 
   @Column({type: 'enum', enum: UserRole})
-  public role: UserRole;
+  public Role: UserRole;
 
   @Column({select: false})
-  public salt: string;
+  public Salt: string;
 
   @Column({select: false})
-  public password: string;
+  public Password: string;
 
   @Column({default: false})
-  public disabled: boolean;
+  public IsActive: boolean;
 
   @CreateDateColumn()
-  public createdDate: Date;
+  public CreatedDate: Date;
 
   @UpdateDateColumn()
-  public updatedDate: Date;
+  public UpdatedDate: Date;
 
   public async authenticate(plaintext: string) {
     const values = await this.getUnselectableValues();
@@ -59,16 +74,16 @@ export class User {
 
   public static async create(user: Partial<IUser>): Promise<User> {
     const repository = getRepository('user');
-    const exists = await repository.count({ email: user.email });
+    const exists = await repository.count({ email: user.Email });
     if (exists) {
       throw new Error('User Already Exists');
     }
     const entity = new User();
-    entity.email = user.email.toLowerCase().trim();
-    entity.role = user.role;
+    entity.Email = user.Email.toLowerCase().trim();
+    entity.Role = user.Role;
     const salt = await this.makeSalt();
-    entity.salt = salt;
-    entity.password = await this.encryptPassword(salt, user.password);
+    entity.Salt = salt;
+    entity.Password = await this.encryptPassword(salt, user.Password);
     return await repository.save(entity);
   }
 
@@ -85,7 +100,7 @@ export class User {
   }
 
   /**
-   * By making the password and salt unaccessable to queries it becomes impossible
+   * By making the Password and Salt unaccessable to queries it becomes impossible
    * to access the values within the entity. A query needs to be performed to get
    * the values at this level
    */
@@ -93,9 +108,9 @@ export class User {
     const currUser = await getRepository(User)
       .createQueryBuilder('user')
       .addSelect('user.password')
-      .addSelect('user.salt')
-      .where('user.id = :id', { id: this.id })
+      .addSelect('user.Salt')
+      .where('user.User_ID = :User_ID', { id: this.User_ID })
       .getOne();
-    return {password: currUser.password, salt: currUser.salt};
+    return {password: currUser.Password, salt: currUser.Salt};
   }
 }
