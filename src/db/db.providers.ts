@@ -10,6 +10,6 @@ export const dbProviders =
             entities: [
                 User,
             ],
-            synchronize: false, //(process.env.NODE_ENV === 'development'),
+            synchronize: (process.env.NODE_ENV === 'development'),
         }),
     };

@@ -9,7 +9,7 @@ import { UserDecor } from 'src/utils/common/user.decorator';
 export class UsersPrivateController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('/:userId')
+  @Get('/get/:userId')
   public async getUser(
     @Param('userId') userId: string,
   ) {

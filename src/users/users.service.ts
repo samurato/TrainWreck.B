@@ -20,8 +20,8 @@ export class UsersService {
   public async getByEmail(email: string): Promise<User> {
     const lower = email.toLowerCase().trim();
     return await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.Email = :Email', {email: lower })
+      .createQueryBuilder('User')
+      .where('User.Email = :Email', {Email: lower })
       .getOne() as User;
   }
 

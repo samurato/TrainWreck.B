@@ -54,7 +54,7 @@ export class User {
   @Column({select: false})
   public Password: string;
 
-  @Column({default: false})
+  @Column({default: true})
   public IsActive: boolean;
 
   @CreateDateColumn()
@@ -73,7 +73,7 @@ export class User {
   }
 
   public static async create(user: Partial<IUser>): Promise<User> {
-    const repository = getRepository('user');
+    const repository = getRepository('User');
     const exists = await repository.count({ email: user.Email });
     if (exists) {
       throw new Error('User Already Exists');
@@ -106,10 +106,10 @@ export class User {
    */
   private async getUnselectableValues(): Promise<{password: string, salt: string}> {
     const currUser = await getRepository(User)
-      .createQueryBuilder('user')
-      .addSelect('user.password')
-      .addSelect('user.Salt')
-      .where('user.User_ID = :User_ID', { id: this.User_ID })
+      .createQueryBuilder('User')
+      .addSelect('User.Password')
+      .addSelect('User.Salt')
+      .where('User.User_ID = :User_ID', { User_ID: this.User_ID })
       .getOne();
     return {password: currUser.Password, salt: currUser.Salt};
   }
