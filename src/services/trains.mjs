@@ -1,51 +1,22 @@
-// const TrainCollection  = require('../models/trains.mjs')
 import { default as Train } from '../models/trains.mjs';
 
-export const getTrains = () => {
-    // TODO get train from database?
-    Train.find({}, (err, trains) => {
-        if (!!err) {
-            console.log('failed to get trains list')
-            throw new Error('Failed to get trains list', err);
-        }
-        return trains;
-    });
-    //return TrainCollection;
-    //return [];
+
+export const getTrains = (cb) => {
+    Train.find({},['_id', 'number_carriages', 'route_id', 'weather', 'headlights', 'youtube_id'], cb);
 }
 
-export const getTrain = (id) => {
-    // TODO get train from database?
-    Train.findOne({id:id}, (err, train) => {
-        if (!!err) {
-            console.log('failed to get train')
-            throw new Error('Failed to get train', err);
-        }
-        return train;
-    });
+export const getTrain = (id, cb) => {
+    Train.findOne({_id: id},['_id', 'number_carriages', 'route_id', 'weather', 'headlights', 'youtube_id'], cb);
+}
 
-    return new Train();
 
-    // TrainCollection.findOne({_id: id}, (err, message) => {
-    //     if (err) {
-    //         console.log('error')
-            
-    //     } else {
-            
-    //         if (req.user.local.username == message.name) {
-    //             process.nextTick(() => {
-    //                 Message.findByIdAndRemove(req.params.id, (err) => {
-    //                     if (err) {
-    //                         console.log('error')
-    //                         res.redirect('/beemp')
-    //                     }
-    //                     res.redirect('/beemp')
-    //                 })
-    //         })} else {
-    //             res.redirect('/beemp')
-    //         }
-
-    //     }
-//})
+export const createTrain = (number_carriages, route_id, weather, headlights, youtubeId, cb) => {
+    const train = new Train();
+    train.number_carriages = number_carriages;
+    train.route_id = route_id;
+    train.weather = weather;
+    train.headlights = headlights;
+    train.youtube_id = youtubeId;
+    train.save(cb);
 }
 

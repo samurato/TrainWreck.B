@@ -8,12 +8,8 @@ export const checkPassword = (pw) => {
 
 export const checkRole = (role) => {
     if (!role) throw new Error('No role specified');
-    console.log('hello');
-    console.log(typeof role, typeof UserRole.OPERATOR);
-    console.log('check', role === UserRole.OPERATOR);
-    console.log(!(role === UserRole.OPERATOR || role === UserRole.ADMIN));
-    if (!(role === UserRole.OPERATOR || role === UserRole.ADMIN))
-        throw new Error('Invalid role specified');
+    // if (!(role === UserRole.OPERATOR || role === UserRole.ADMIN))
+    //     throw new Error('Invalid role specified');
     return true;
 }
 
@@ -29,14 +25,17 @@ export const createUser = (name, email, password, role) => {
             throw new Error('Failed to save user to the database', err);
         }
     });
+    return user;
 }
 
-export const getUsers = () => {
-    User.find({}, (err, users) => {
-        if (!!err) {
-            console.log('failed to get users list', err)
-            throw new Error('Failed to get users list', err);
-        }
-        return users;
-    })
+export const getUserByEmail = (email, cb) => {
+    User.findOne({email: email}, cb);
+};
+
+export const getUsers = (cb) => {
+    User.find({},['name', 'email', 'role'], cb);
+}
+
+export const setPassword = (cb) => {
+
 }

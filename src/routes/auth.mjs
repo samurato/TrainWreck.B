@@ -19,37 +19,43 @@ async (req, res) => {
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.json(422, {
+        return res.status(200).send({
             error: 'invalid username or password',
         });
     }    
-
-    if (!AuthService.isAuthorised(req.body.email, req.body.password)) {
-        return res.json(401, {
-            error: 'not valid user',
-        });
-    }
-    const token = AuthService.makeToken(req.body.email, req.body.password);
-    
-    return res.send({
-        message: 'success', 
-        // email: req.body.email, 
-        // password: req.body.password,
-        token: token
-    });
+    await AuthService.isAuthorised(req.body.email, req.body.password, async (isAuthorised) => {
+        if (!isAuthorised) {
+            return res.status(200).send({
+                error: 'incorrect credentials',
+            });
+        } else {
+            const token = await AuthService.makeTokenWithEmail(req.body.email, (token) => {
+                if (!token) {
+                    return res.status(500).send({
+                        error: 'failed to make token'
+                    });
+                } else {
+                    return res.status(200).send({
+                        token: token
+                    });
+                }
+            });
+            
+        }
+    }); 
 });
 
 
 router.post('/refresh', 
 async (req, res) => {
 
-    if(!AuthService.verifyToken(req.body.token)){
+    if(!AuthService.verifyToken(req.user.token)){
         return res.json(401, {
             error: 'invalid token',
         });
     }
 
-    const token = AuthService.remakeToken(req.body.token);
+    const token = AuthService.remakeToken(req.user.token);
     
     return res.send({
         message: 'success', 

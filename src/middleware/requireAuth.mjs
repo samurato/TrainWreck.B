@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import {default as config} from '../config.mjs';
+import { default as User } from '../models/users.mjs';
 
 export default (req, res, next) => {
     const { authorization } = req.headers;
@@ -14,6 +15,10 @@ export default (req, res, next) => {
         if (err) {
             return res.status(401).send({ error: 'You must be logged in.' });
         }
+
+        const {userId} = payload;
+        const user = await User.findById(payload._id, ['_id', 'name', 'email', 'role']);
+        req.user = user;
         next();
     });
 };

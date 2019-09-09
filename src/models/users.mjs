@@ -27,7 +27,8 @@ const usersSchema = mongoose.Schema({
         enum: [UserRole.OPERATOR, UserRole.ADMIN],
         default: UserRole.OPERATOR,
         required: true
-    }
+    },
+    'updated_at': {type: Date, default: Date.now()}
 });
 
 const makeSalt = async () => {
@@ -41,7 +42,9 @@ const hashPassword = async (password, currSalt) => {
 
 }
 
-usersSchema.pre('save', async function save(next) {
+usersSchema.pre('save', async function (next) {
+    this.updated_at = Date.now();
+
     if (!this.isModified('password')) return next();
     try {
         const salt = await makeSalt();
@@ -53,9 +56,10 @@ usersSchema.pre('save', async function save(next) {
     }
 });
 
-usersSchema.methods.validatePassword = async function validatePassword(data) {
-    const salt = Buffer.from(currSalt, 'base64');
-    return await crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('base64');
+usersSchema.methods.validatePassword = async function (attempt) {
+    const salt = await Buffer.from(this.salt, 'base64');
+    const hashed = await crypto.pbkdf2Sync(attempt, salt, 10000, 64, 'sha512').toString('base64');
+    return this.password === hashed;
 
 };
 
