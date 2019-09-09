@@ -27,7 +27,7 @@ async (req, res) => {
     return res.send({message: 'success'});
 });
 
-router.get('/create',
+router.post('/create',
 [
     check('name').exists(),
     check('email').isEmail(),
@@ -37,29 +37,56 @@ router.get('/create',
 async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.json(422, {
-            error: errors.array(true).msg
+        return res.status(422).json({
+            error: errors.errors.map(err => {
+                return {
+                    msg: err.msg,
+                    param: err.param,
+                };
+            })
         });
     }
+    try {
+        await UsersService.createUser(req.body.name, req.body.email, req.body.password, req.body.role);
+    } catch (e) {
+        return res.status(500).json({
+            error: `Failed to create user: ${e}`,
+        });
+    }
+    
+
     return res.send({message: 'success'});
 });
 
-router.get('/password/:id',
+router.put('/password/:id',
 async (req, res) => {
     return res.send({message: 'success'});
 });
 
-router.get('/role/:id', async (req, res) => {
+router.put('/role/:id', async (req, res) => {
     return res.send({message: 'success'});
 });
 
-router.get('/name/:id',
+router.put('/name/:id',
 async (req, res) => {
     return res.send({message: 'success'});
 });
 
-router.get('/remove/:id',
+router.delete('/remove/:id',
 async (req, res) => {
+    return res.send({message: 'success'});
+});
+
+
+router.post('/testmake',
+async (req, res) => {
+    try {
+        await UsersService.createUser(req.body.name, req.body.email, req.body.password, req.body.role);
+    } catch (e) {
+        return res.json(401, {
+            error: `Failed to create user: ${e}`,
+        });
+    }
     return res.send({message: 'success'});
 });
 

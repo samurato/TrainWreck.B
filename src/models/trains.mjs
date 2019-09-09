@@ -7,12 +7,12 @@ export const ControlSignals = {
 
 
 const trainsSchema = mongoose.Schema({
-  'id'                : String,
-  'number_carriages'  : Number,
-  'route_id'          : String,
-  'weather'           : String,
-  'headlights'        : Boolean,
-  'youtubeId'         : String
+  'id'                : {type: String,  required:true},
+  'number_carriages'  : {type: Number,  required:true},
+  'route_id'          : {type: String,  required:true},
+  'weather'           : {type: String,  required:true},
+  'headlights'        : {type: Boolean, required:true},
+  'youtubeId'         : {type: String,  required:true}
 });
 
 // {id: "12345678", number_carriages : 10, route_id: "green", weather: "sunny", headlights: true, youtubeId: "asksd123" }

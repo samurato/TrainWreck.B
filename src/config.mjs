@@ -4,7 +4,7 @@ const JWTConfig = {
 }
 
 const DBConfig = {
-    URL: 'mongodb://localhost/trainwreckers'
+    URL: 'mongodb://localhost:27017/trainwreckers'
 }
 
 export default {
