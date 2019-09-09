@@ -8,10 +8,6 @@ import * as UsersService from '../services/users.mjs';
 
 const router = express.Router();
 
-router.get('/check', async (req, res) => {
-    return res.send({message: 'success'});
-});
-
 router.get('/',
 async (req, res) => {
     const users = await UsersService.getUsers((err, users) => {
@@ -60,7 +56,6 @@ async (req, res) => {
             error: `Could not get user ${e}`,
         });
     }
-    return res.send({message: 'success'});
 });
 
 router.get('/me',
@@ -72,7 +67,7 @@ router.post('/create',
 [
     check('name').exists(),
     check('email').isEmail(),
-    check('password').custom(pw => UsersService.checkPassword(pw)),
+    check('password').isLength({min: 8}),
     check('role').custom(role => UsersService.checkRole(role)),
 ],
 async (req, res) => {
@@ -108,7 +103,7 @@ async (req, res) => {
 
 router.put('/password/:id',
 [
-    check('password').custom(pw => UsersService.checkPassword(pw)),
+    check('password').isLength({min: 8}),
 ],
 async (req, res) => {
     const errors = validationResult(req);
@@ -126,7 +121,7 @@ async (req, res) => {
                     error: `User does not exist`,
                 });
             }
-            UsersService.setPassword(req.body.password, user);
+            await UsersService.setPassword(req.body.password, user);
             return  res.sent({msg: 'success'});
         });    
     } catch (e) {
@@ -148,7 +143,16 @@ async (req, res) => {
 
 router.delete('/remove/:id',
 async (req, res) => {
-    return res.send({message: 'success'});
+    const user = await UsersService.getUser(req.params.id, (err, user) => {
+        if (!!err) {
+            return res.status(404).json({
+                error: `User not found`,
+            });
+        }
+        user.remove();
+    });
+    
+    return res.send({message: 'Deleted User'});
 });
 
 export default router;

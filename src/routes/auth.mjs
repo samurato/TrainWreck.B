@@ -1,6 +1,7 @@
 import express from 'express';
 import checkAPIs from 'express-validator';
 import * as AuthService from '../services/auth.mjs';
+import requireAuth from '../middleware/requireAuth.mjs';
 const { check, validationResult } = checkAPIs;
 
 const router = express.Router();
@@ -45,22 +46,22 @@ async (req, res) => {
     }); 
 });
 
-
-router.post('/refresh', 
+ 
+router.post('/refresh', requireAuth,
 async (req, res) => {
-
-    if(!AuthService.verifyToken(req.user.token)){
-        return res.json(401, {
-            error: 'invalid token',
-        });
-    }
-
-    const token = AuthService.remakeToken(req.user.token);
-    
-    return res.send({
-        message: 'success', 
-        token: token
-    });
+    // If you have reached this point, the middleware has worked and you are authorised
+    const token = AuthService.makeTokenWithEmail(req.user.email, (token) => {
+        if (!token) {
+            return res.status(401).send({
+                error: 'token could not be generated'
+            });
+        } else {
+            return res.status(200).send({
+                message: 'success', 
+                token: token
+            });
+        }
+    });   
 });
 
 

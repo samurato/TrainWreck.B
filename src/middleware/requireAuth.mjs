@@ -15,9 +15,8 @@ export default (req, res, next) => {
         if (err) {
             return res.status(401).send({ error: 'You must be logged in.' });
         }
-
-        const {userId} = payload;
-        const user = await User.findById(payload._id, ['_id', 'name', 'email', 'role']);
+        const user = await User.findById(payload._id, ['_id', 'name', 'email', 'role', 'updated_at']);
+        //TODO: compare updated at from token with user profile
         req.user = user;
         next();
     });

@@ -1,11 +1,5 @@
 import { default as User, UserRole, getRole } from '../models/users.mjs';
 
-export const checkPassword = (pw) => {
-    if (!pw) throw new Error('No password specified');
-    if (pw.toString().length < 8) throw new Error('Password too short');
-    return true;
-}
-
 export const checkRole = (role) => {
     if (!role) throw new Error('No role specified');
     // if (!(role === UserRole.OPERATOR || role === UserRole.ADMIN))
@@ -36,6 +30,15 @@ export const getUsers = (cb) => {
     User.find({},['name', 'email', 'role'], cb);
 }
 
-export const setPassword = (cb) => {
+export const getUser = (id, cb) => {
+    User.findById(id,['name', 'email', 'role'], cb);
+}
 
+export const setPassword = (password, user) => {
+    user.password = password;
+    user.save(err => {
+        if (err) {
+            throw new Error('Failed to save user password to the database', err);
+        }
+    });
 }

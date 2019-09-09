@@ -15,9 +15,9 @@ export const isAuthorised = async (email, password, cb) => {
 export const makeTokenWithEmail = (email, cb) => {
     User.findOne({email}, async (err, user) => {
         if (!user) {
-            cb(null);
+            return cb(null);
         } else {
-            cb(jwt.sign(
+            return cb(jwt.sign(
                 {
                     _id: user._id,
                     name: user.name,
@@ -35,17 +35,8 @@ export const makeTokenWithEmail = (email, cb) => {
     
  };
 
-export const remakeToken = async (token) => {
-    const decoded = jwt.verify(token, config.JWT.SECRET);
-    return await makeTokenWithEmail(decoded.email);
-};
-
 export const verifyToken = (token) =>{
-    jwt.verify(token, config.JWT.SECRET, function(err, decoded){
+    jwt.verify(token, config.JWT.SECRET, function(err, decoded) {
         return err;
     });
-}
-
-const makeToken = (name, email, role) => {
-
 }

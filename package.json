@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --experimental-modules app.mjs"
+    "dev": "nodemon --experimental-modules app.mjs",
+    "seed:user": "node --experimental-modules seed_user.mjs"
   },
   "repository": {
     "type": "git",
