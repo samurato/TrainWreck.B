@@ -3,6 +3,11 @@ const JWTConfig = {
     TIMEOUT: '2d'
 }
 
+const DBConfig = {
+    URL: 'mongodb://localhost/trainwreckers'
+}
+
 export default {
-    JWT: JWTConfig
+    JWT: JWTConfig,
+    DB: DBConfig
 }

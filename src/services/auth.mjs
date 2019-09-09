@@ -6,13 +6,28 @@ export const isAuthorised = (email, password) => {
     //TODO check user in database and return true or false
 };
 
-export const makeToken = (email, password) => {
+export const makeToken = (token) => {
+    return jwt.sign(
+         {
+             oldToken:token
+         },
+         config.JWT.SECRET,
+         {expiresIn: config.JWT.TIMEOUT},
+     );
+ };
+
+export const remakeToken = (email, password) => {
    return jwt.sign(
-        {
-            name: 'Ben', 
+        { 
             email: email
         },
         config.JWT.SECRET,
         {expiresIn: config.JWT.TIMEOUT},
     );
 };
+
+export const verifyToken = (token) =>{
+    jwt.verify(token, config.JWT.SECRET, function(err, decoded){
+        return err;
+    });
+}
